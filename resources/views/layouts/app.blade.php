@@ -25,7 +25,7 @@
 
         @livewireStyles
     </head>
-    <body class="font-sans bg-zinc-100 flex items-center justify-center min-h-screen">
+    <body class="font-sans bg-zinc-100 min-h-screen">
         {{ $slot }}
 
         @livewireScripts

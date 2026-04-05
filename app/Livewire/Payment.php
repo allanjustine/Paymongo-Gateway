@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\PaymentOrder;
 use App\Services\PaymongoService;
 use Livewire\Component;
 use Illuminate\Support\Facades\Http;
@@ -20,18 +21,23 @@ class Payment extends Component
 
         $amountInCentavos = (int) ($this->amount * 100);
 
+        $payment_order = PaymentOrder::query()->create([
+            'amount'         => $amountInCentavos / 100,
+            'payment_method' => $this->type
+        ]);
+
         $response = Http::withHeaders($paymongoService->headers())->post(config('app.paymongo_url') . "/sources", [
-            'data' => [
-                'attributes' => [
-                    'amount' => $amountInCentavos,
-                    'currency' => 'PHP',
-                    'type' => $this->type,
-                    'redirect' => [
-                        'success' => url('/payment/success'),
-                        'failed' => url('/payment/failed'),
+            'data'                       => [
+                'attributes'             => [
+                    'amount'             => $amountInCentavos,
+                    'currency'           => 'PHP',
+                    'type'               => $this->type,
+                    'redirect'           => [
+                        'success'        => route('payment.success'),
+                        'failed'         => route('payment.failed'),
                     ],
-                    'metadata' => [
-                        'items' => 'items is here!',
+                    'metadata'           => [
+                        'payment_order_' => 'test',
                     ],
                 ],
             ],
@@ -41,16 +47,22 @@ class Payment extends Component
             $errorDetail = $response->json('errors.0.detail') ?? $response->body();
 
             $this->addError('error', "Payment initiation failed:  {$errorDetail}");
-
-            return;
         }
 
         $checkoutUrl = $response->json('data.attributes.redirect.checkout_url');
+
         $sourceId = $response->json('data.id');
 
-        session(['paymongo_source_id' => $sourceId]);
+        $payment_order->update([
+            'source_id' => $sourceId,
+            'status'    => $response->json('data.attributes.status')
+        ]);
 
-        return $this->redirect($checkoutUrl);
+        $this->reset();
+
+        $this->redirect($checkoutUrl);
+
+        return;
     }
 
     public function render()

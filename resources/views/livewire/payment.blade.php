@@ -90,7 +90,8 @@
 
         <button type="submit" wire:loading.attr="disabled"
             class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-base cursor-pointer mt-4 transition">
-            Pay Now
+            <span wire:loading>Please wait...</span>
+            <span wire:loading.remove>Pay Now</span>
         </button>
     </form>
 </div>

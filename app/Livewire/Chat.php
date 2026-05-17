@@ -97,7 +97,7 @@ class Chat extends Component
         }
 
         return view('livewire.chat', [
-            'users' => User::with('userNickname', 'myNicknameFromUser')
+            'users'      => User::with('userNickname', 'myNicknameFromUser')
                 ->where('id', '!=', Auth::id())
                 ->when($this->search, fn($q) => $q->whereAny(['name', 'email'], 'like', "%{$this->search}%")->orWhereRelation('userNickname', 'nickname', 'like', "%{$this->search}%"))
                 ->get(),

@@ -34,9 +34,9 @@ class Chat extends Component
         $this->validate(['newMessage' => 'required|string|max:1000']);
 
         Message::create([
-            'user_id'    => Auth::id(),
+            'user_id'     => Auth::id(),
             'receiver_id' => $this->activeUserId,
-            'body'       => $this->newMessage,
+            'body'        => $this->newMessage,
         ]);
 
         $this->newMessage = '';

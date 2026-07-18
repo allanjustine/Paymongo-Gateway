@@ -1,2 +1,2 @@
 # Paymongo-Gateway
-Sample Pay using E-Wallet
+Sample Pay using E-Wallet.
